@@ -1,26 +1,78 @@
-'forge config --json' running
-'/Users/davidbonillajaylen2022/.solc-select/artifacts/solc-0.8.27/solc-0.8.27 --version' running
-'/Users/davidbonillajaylen2022/.solc-select/artifacts/solc-0.8.27/solc-0.8.27 @openzeppelin/contracts/=contracts/ contracts/token/ERC20/ERC20.sol --combined-json abi,ast,bin,bin-runtime,srcmap,srcmap-runtime,userdoc,devdoc,hashes --optimize --optimize-runs 200 --evm-version prague --allow-paths .,/Users/davidbonillajaylen2022/openzeppelin-contracts/contracts/token/ERC20' running
-INFO:Printers:
-Compiled with solc
-Total number of contracts in source files: 7
-Source lines of code (SLOC) in source files: 178
-Number of  assembly lines: 0
-Number of optimization issues: 0
-Number of informational issues: 1
-Number of low issues: 0
-Number of medium issues: 0
-Number of high issues: 0
+# Slither Security Analysis Report  
+**Project:** OpenZeppelin ERC20 Contract  
+**Analyst:** David Bonilla  
 
-ERCs: ERC20
+---
 
-+----------------+-------------+-------+--------------------+--------------+----------+
-| Name           | # functions | ERCS  | ERC20 info         | Complex code | Features |
-+----------------+-------------+-------+--------------------+--------------+----------+
-| IERC721Errors  | 0           |       |                    | No           |          |
-| IERC1155Errors | 0           |       |                    | No           |          |
-| ERC20          | 29          | ERC20 | No Minting         | No           |          |
-|                |             |       | Approve Race Cond. |              |          |
-|                |             |       |                    |              |          |
-+----------------+-------------+-------+--------------------+--------------+----------+
-INFO:Slither:contracts/token/ERC20/ERC20.sol analyzed (7 contracts)
+## 🔍 Summary
+
+This report presents the results of a static security analysis performed on OpenZeppelin's production-grade ERC20 token contract using Slither. The analysis was conducted locally using Foundry-compatible workflows, `solc-select`, and Python 3.13.2.
+
+The primary goal was to identify vulnerabilities or audit risks relevant to institutional environments such as UBS.
+
+---
+
+## 🚨 Key Finding
+
+### Mixed Solidity Version Constraints Detected
+
+Slither flagged the use of inconsistent Solidity pragma directives across contract imports:
+
+| Contract             | Solidity Version |
+|----------------------|------------------|
+| `IERC6093.sol`       | `>=0.8.4`        |
+| `ERC20.sol`          | `^0.8.20`        |
+| `Context.sol`        | `^0.8.20`        |
+| `IERC20.sol`         | `>=0.4.16`       |
+| `IERC20Metadata.sol` | `>=0.6.2`        |
+
+This inconsistency can introduce **non-deterministic behavior during compilation**, increase audit complexity, and cause **integration risks** across different build environments.
+
+---
+
+## 🧠 UBS-Relevance Commentary
+
+In an institutional setting such as UBS, consistent compiler versioning is **critical** for:
+
+- Reliable contract behavior  
+- Build reproducibility  
+- Streamlined auditing processes  
+- Long-term maintenance and upgrade workflows  
+
+While not an immediate security vulnerability, this would be **flagged** under a UBS governance framework to ensure high standards of security and quality control — especially for tokenization, custody, or compliance-heavy use cases.
+
+---
+
+## ✅ Additional Notes
+
+- **ERC20 Standard Race Condition Detected**: As expected, the contract allows `approve()` to be overwritten, which can introduce race conditions if not mitigated by using `increaseAllowance()` and `decreaseAllowance()`. This is a known design issue, not a vulnerability.
+
+---
+
+## 🧪 Tools & Environment
+
+- Slither `v0.11.3`  
+- Python `3.13.2`  
+- Foundry (`forge v1.4.3`)  
+- `solc-select` using `solc 0.8.27`  
+- macOS (local terminal)
+
+---
+
+## 📁 Contract Summary
+
+- Contracts analyzed: `IERC20`, `IERC20Metadata`, `IERC6093`, `Context`, `ERC20`  
+- Total contracts: 7  
+- ERC20 functions: 29  
+- No minting function  
+- No complex code  
+- Informational: Approve race condition
+
+---
+
+_This report was generated manually by David Bonilla using Slither static analysis tooling and reviewed for institutional audit readiness._
+
+
+
+
+_This report was generated manually by David Bonilla using Slither static analysis tooling and reviewed for institutional audit readiness._
